@@ -1,6 +1,6 @@
 🚀 Just launched my latest Flutter project: A Feature-Rich E-Commerce ShopApp!
 
-I’m excited to showcase my newly developed ShopApp built with Flutter, designed to deliver a seamless shopping experience with modern UI/UX, robust functionality, and scalable architecture. Here’s a glimpse of what I’ve implemented:
+I’m excited to showcase my newly developed ShopApp built with Flutter, designed to deliver a seamless shopping experience with modern UI with dark mode 🌓, robust functionality, and scalable architecture. Here’s a glimpse of what I’ve implemented:
 
 ✨ Key Features:
 
