@@ -1,0 +1,39 @@
+class ProductModel {
+  final bool status;
+  final ProductDataModel? data;
+
+  ProductModel({
+    required this.status,
+    required this.data,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) => ProductModel(
+    status: json['status'],
+    data: json['data'] != null ? ProductDataModel.fromJson(json['data']) : null,
+  );
+}
+
+
+class ProductDataModel {
+  final int id;
+  final String name;
+  final String email;
+  final String phone;
+  final String image;
+
+  ProductDataModel({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.phone,
+    required this.image,
+  });
+
+  factory ProductDataModel.fromJson(Map<String, dynamic> json) => ProductDataModel(
+    id: json['id'],
+    name: json['name'],
+    email: json['email'],
+    phone: json['phone'],
+    image: json['image'],
+  );
+}

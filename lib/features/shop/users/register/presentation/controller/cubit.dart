@@ -1,0 +1,56 @@
+import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/core/shared/const/constance.dart';
+import 'package:shop_app/core/shared/network/remote/shop_helper.dart';
+import 'package:shop_app/features/shop/users/register/data/shop_Register_model_entity.dart';
+import 'package:shop_app/features/shop/users/register/presentation/controller/state.dart';
+
+class ShopRegisterCubit extends Cubit<ShopRegisterState> {
+  ShopRegisterCubit() : super(RegisterInitialState());
+
+  static ShopRegisterCubit get(context) => BlocProvider.of(context);
+
+  bool isPassword = true;
+  IconData suffix = Icons.visibility_off_outlined;
+  var nameController = TextEditingController();
+  var phoneController = TextEditingController();
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
+
+  void changePasswordVisibility() {
+    isPassword = !isPassword;
+    suffix =
+        isPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined;
+    emit(ShopRegisterChangePasswordVisibilityState());
+  }
+
+  ShopRegisterModel? shopRegisterModel;
+  void userRegister({
+    required String name,
+    required String email,
+    required String phone,
+    required String password,
+  }) {
+    emit(ShopRegisterGetUserLoadingState());
+    ShopHelper.postDate(
+      url: registerEndPoint,
+      data: {
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'password': password,
+      },
+      token: token,
+    ).then((value){
+      shopRegisterModel = ShopRegisterModel.fromJson(value.data);
+      debugPrint(value.data.toString());
+      emit(ShopRegisterGetUserSuccessState(shopRegisterModel!));
+    }).catchError((error){
+      emit(ShopRegisterGetUserErrorState(error.toString()));
+      debugPrint(error.toString());
+    });
+  }
+}

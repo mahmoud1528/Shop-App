@@ -1,0 +1,45 @@
+import 'package:bloc/bloc.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shop_app/core/shared/const/constance.dart';
+import 'package:shop_app/core/shared/network/remote/shop_helper.dart';
+import 'package:shop_app/features/shop/users/login/data/shop_login_model_entity.dart';
+import 'package:shop_app/features/shop/users/login/presentation/controller/state.dart';
+
+class ShopLoginCubit extends Cubit<ShopLoginState> {
+  ShopLoginCubit() : super(LoginInitialState());
+
+  static ShopLoginCubit get(context) => BlocProvider.of(context);
+
+  bool isPassword = true;
+  IconData suffix = Icons.visibility_off_outlined;
+  var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  var formKey = GlobalKey<FormState>();
+
+  void changePasswordVisibility() {
+    isPassword = !isPassword;
+    suffix =
+        isPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined;
+    emit(ShopLoginChangePasswordVisibilityState());
+  }
+
+  ShopLoginModel? loginModel;
+
+  void getUser({required String email, required String password}) {
+    emit(ShopLoginGetUserLoadingState());
+
+    ShopHelper.postDate(
+      url: loginEndPoint,
+      data: {'email': email, 'password': password},
+    ).then((value) {
+      loginModel = ShopLoginModel.fromJson(value.data);
+      debugPrint('The User is : ${value.data}');
+      emit(ShopLoginGetUserSuccessState());
+    }).catchError((error) {
+      emit(ShopLoginGetUserErrorState(error.toString()));
+      debugPrint(error.toString());
+    });
+  }
+}

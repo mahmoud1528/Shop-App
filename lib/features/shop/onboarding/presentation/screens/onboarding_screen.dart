@@ -1,0 +1,120 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:shop_app/core/shared/network/local/cache_helper.dart';
+import 'package:shop_app/core/shared/widgets/my_txt_button.dart';
+import 'package:shop_app/features/shop/users/login/presentation/screens/login_screen.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+import '../data/onboardong_model.dart';
+import '../widget/build_onboarding_item.dart';
+
+class OnBoardingScreen extends StatefulWidget {
+  const OnBoardingScreen({super.key});
+
+  @override
+  State<OnBoardingScreen> createState() => _OnBoardingScreenState();
+}
+
+var controller = PageController();
+bool isLast = false;
+
+void onSubmit(context) {
+  CacheHelper.setData(key: 'onBoarding', value: true).then((value) {
+    if (value) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()),
+      );
+    }
+  });
+}
+
+class _OnBoardingScreenState extends State<OnBoardingScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: [
+          MyTxtButton(
+            onPressed: () {
+              onSubmit(context);
+            },
+            text: 'SKIP',
+            style: Theme.of(
+              context,
+            ).textTheme.titleLarge!.copyWith(color: Colors.blue),
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          children: [
+            Expanded(
+              child: PageView.builder(
+                physics: BouncingScrollPhysics(),
+                controller: controller,
+                onPageChanged: (index) {
+                  if (index == onBoarding.length - 1) {
+                    setState(() {
+                      isLast = true;
+                      debugPrint(isLast.toString());
+                    });
+                  } else {
+                    setState(() {
+                      isLast = false;
+                      debugPrint(isLast.toString());
+                    });
+                  }
+                },
+                itemBuilder:
+                    (context, index) =>
+                        BuildOnboardingItem(model: onBoarding[index]),
+                itemCount: onBoarding.length,
+              ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              children: [
+                SmoothPageIndicator(
+                  controller: controller,
+                  count: onBoarding.length,
+                  axisDirection: Axis.horizontal,
+                  effect: ExpandingDotsEffect(
+                    dotWidth: 10,
+                    dotHeight: 10,
+                    spacing: 5,
+                    dotColor: Colors.grey,
+                    //inactive
+                    activeDotColor: Colors.blue,
+                    //active
+                    expansionFactor: 1.01,
+                  ),
+                ),
+                Spacer(),
+                FloatingActionButton(
+                  onPressed: () {
+                    if (isLast) {
+                      onSubmit(context);
+                    }
+                    controller.nextPage(
+                      duration: Duration(microseconds: 750),
+                      curve: Curves.fastEaseInToSlowEaseOut,
+                    );
+                  },
+                  backgroundColor: Colors.blue,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child: Icon(
+                    Icons.arrow_forward_ios_outlined,
+                    color: Colors.white,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
