@@ -1,6 +1,6 @@
 class ProductDetailsModel {
-  late bool status;
-  late ProductDetailsModelData? data;
+  final bool status;
+  final ProductDetailsModelData? data;
 
   ProductDetailsModel({required this.status, required this.data});
 

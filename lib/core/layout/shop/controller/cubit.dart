@@ -8,6 +8,7 @@ import 'package:shop_app/core/shared/network/remote/shop_helper.dart';
 import 'package:shop_app/features/shop/home/data/model/category_home_model.dart';
 import 'package:shop_app/features/shop/home/data/model/shop_home_model.dart';
 import 'package:shop_app/features/shop/home/presentation/screens/home_screen.dart';
+import 'package:shop_app/features/shop/search/data/model/search_model_entity.dart';
 
 import '../../../../features/shop/products_details/model/product_details_model.dart';
 import '../../../../features/shop/setting/data/model/profile_model.dart';
@@ -24,10 +25,11 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
   static ShopLayoutCubit get(context) => BlocProvider.of(context);
 
   int currentIndex = 0;
-  int current=0;
+  int current = 0;
   var nameController = TextEditingController();
   var emailController = TextEditingController();
   var phoneController = TextEditingController();
+  var searchController = TextEditingController();
 
   List<BottomNavigationBarItem> items = [
     BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -53,14 +55,13 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
     emit(ShopChangeSmoothIndicatorState());
   }
 
-  void changeLanguage(){
-    if(language == 'ar'){
+  void changeLanguage() {
+    if (language == 'ar') {
       language = 'en';
-    }else {
+    } else {
       language = 'ar';
     }
     emit(ShopChangeLanguageState());
-
   }
 
   ShopHomeModel? shopHomeModel;
@@ -68,7 +69,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
 
   void getHome() {
     emit(ShopGetHomeLoadingState());
-    ShopHelper.getDate(url: homeEndPoint, token: token,lang: language)
+    ShopHelper.getDate(url: homeEndPoint, token: token, lang: language)
         .then((value) {
           shopHomeModel = ShopHomeModel.fromJson(value.data);
           debugPrint('The User is : ${value.data}');
@@ -88,7 +89,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
 
   void getCategory() {
     emit(ShopGetCategoryHomeLoadingState());
-    ShopHelper.getDate(url: categoryEndPoint,lang: language)
+    ShopHelper.getDate(url: categoryEndPoint, lang: language)
         .then((value) {
           categoryHomeModel = CategoryHomeModel.fromJson(value.data);
           debugPrint('The Category is : ${value.data}');
@@ -109,7 +110,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
           url: changeFavoriteEndPoint,
           data: {'product_id': productId},
           token: token,
-          lang: language
+          lang: language,
         )
         .then((value) {
           changeFavoriteModel = ChangeFavoriteModel.fromJson(value.data);
@@ -130,7 +131,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
 
   void getFavorite() {
     emit(ShopGetFavoriteLoadingState());
-    ShopHelper.getDate(url: favoriteEndPoint, token: token,lang: language)
+    ShopHelper.getDate(url: favoriteEndPoint, token: token, lang: language)
         .then((value) {
           favoriteModel = FavoriteModel.fromJson(value.data);
           debugPrint('The Favorites is : ${value.data}');
@@ -146,7 +147,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
 
   void getProfile() {
     emit(ShopGetProfileLoadingState());
-    ShopHelper.getDate(url: profileEndPoint, token: token,lang: language)
+    ShopHelper.getDate(url: profileEndPoint, token: token, lang: language)
         .then((value) {
           profileModel = ProfileModel.fromJson(value.data);
           debugPrint('The Profile is : ${value.data}');
@@ -170,7 +171,7 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
           url: updateProfileEndPoint,
           data: {'name': name, 'email': email, 'phone': phone},
           token: token,
-          lang: language
+          lang: language,
         )
         .then((value) {
           updateProfileModel = UpdateProfileModel.fromJson(value.data);
@@ -188,7 +189,11 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
 
   void productsDetails(int id) {
     emit(ShopGetProductDetailsLoadingState());
-    ShopHelper.getDate(url: productDetailsEndPoint(id), token: token,lang: language)
+    ShopHelper.getDate(
+          url: productDetailsEndPoint(id),
+          token: token,
+          lang: language,
+        )
         .then((value) {
           productDetailsModel = ProductDetailsModel.fromJson(value.data);
           debugPrint('The Product Details is : ${value.data}');
@@ -196,6 +201,27 @@ class ShopLayoutCubit extends Cubit<ShopLayoutState> {
         })
         .catchError((error) {
           emit(ShopGetProductDetailsErrorState(error.toString()));
+          debugPrint(error.toString());
+        });
+  }
+
+  SearchModel? searchModel;
+
+  void getSearch({required String text}) {
+    emit(ShopGetSearchLoadingState());
+    ShopHelper.postDate(
+          url: searchEndPoint,
+          data: {'text': text},
+          token: token,
+          lang: language,
+        )
+        .then((value) {
+          searchModel = SearchModel.fromJson(value.data);
+          debugPrint('The Search is : ${value.data}');
+          emit(ShopGetSearchSuccessState());
+        })
+        .catchError((error) {
+          emit(ShopGetSearchErrorState(error.toString()));
           debugPrint(error.toString());
         });
   }

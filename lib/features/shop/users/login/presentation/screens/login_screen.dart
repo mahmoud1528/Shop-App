@@ -162,6 +162,7 @@ class LoginScreen extends StatelessWidget {
                               style: Theme.of(context).textTheme.titleLarge!
                                   .copyWith(color: Colors.blue),
                             ),
+                            SizedBox(height: 30.0,)
                           ],
                         ),
                       ],
