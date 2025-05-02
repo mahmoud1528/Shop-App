@@ -6,6 +6,7 @@ const favoriteEndPoint = 'favorites';
 const profileEndPoint = 'profile';
 const updateProfileEndPoint = 'update-profile';
 const registerEndPoint = 'register';
+const searchEndPoint = 'products/search';
 String productDetailsEndPoint (int id)=> 'products/$id';
 late String language;
 String? token='';
